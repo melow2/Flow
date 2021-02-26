@@ -1,1 +1,15 @@
 # Flow
+- Kotlin의 Flow는 순차적으로 값을 내보내고 정상적으로 또는 예외로 완료되는 비동기적인 데이터 스트림.
+- 여러개의 값을 반환하는 function을 만들때 사용하는 coroutine builder.
+- Flow는 Cold Stream이기 때문에 값을 방출할 때마다 사용된다.
+- 매번 새로운 Flow를 생성하고, 소모성이 아니다.
+- flow로 만들어진 collection은 이를 호출한 caller의 coroutine context에서 수행되며, 이를 context preservation이라고 부른다.
+- 하지만 CPU를 많이 사용하는 flow 연산이라면, background Thread에서 수행햐야하고, 이 결과를 받아 UI를 업데이트 하는 작업은 main Thread에서 처리하도록 해야 하는 경우가 발생할 수 있음.
+- 보통의 Coroutine에서는 withContext를 이용하여 쉽게 전환할 수 있다.
+- 하지만 위에서 언급한 Context Preservation 속성으로 인하며 emit을 하는 context와 수신하는 context를 다르지 못하도록 설계되어있다.
+- 이럴 경우 flowOn Operator를 이용하여 emission하는 부분의 context를 바꿔줄 수 있다.
+- 하지만 Coroutine을 수행하는 주체는 달라지며 각각의 다른 Coroutine에서 실행된다. ( Thread가 다름. )
+
+
+# Reference
+- [https://tourspace.tistory.com/260?category=797357](https://tourspace.tistory.com/260?category=797357)
