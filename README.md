@@ -46,5 +46,34 @@ D/TEST12: [EMIT] 2
 D/TEST12: [EXCEPTION] Crash on ::2
 D/TEST12: [COLLECT] Collect:: [EMIT_CRASH] ::java.lang.IllegalStateException: 33
 ```
+
+## Combine
+- Flow가 conflation처럼 최신값이나 최종 연산값만을 사용하는 형태라면, 현재 flow에서 최신값만을 기준으로 연산하는 작업을 수행하도록 함.
+- 즉 두개의 flow에서 값을 emit하고 서로 다른 타이밍으로 방출 될 때.최신값만을 기준으로 두개의 방출값은 연산하도록 함.
+```
+fun integerEmit() = (1..3).asFlow().onEach { delay(300) }
+fun stringEmit() = flowOf("one","two","three").onEach { delay(400) }
+
+fun runOnTest13() = CoroutineScope(Dispatchers.Main).launch {
+    Log.d(MainActivity.TEST13, "[START]")
+    val time = measureTimeMillis {
+        integerEmit().combine(stringEmit()){ a,b -> "$a -> $b"}
+            .collect { value ->
+                Log.d(MainActivity.TEST13, "[COLLECT] Collect::$value")
+            }
+
+    }
+    Log.d(MainActivity.TEST13, "[END] ** Collected in $time ms ** ")
+}
+```
+```
+D/TEST13: [START]
+D/TEST13: [COLLECT] Collect::1 -> one
+D/TEST13: [COLLECT] Collect::2 -> one
+D/TEST13: [COLLECT] Collect::2 -> two
+D/TEST13: [COLLECT] Collect::3 -> two
+D/TEST13: [COLLECT] Collect::3 -> three
+D/TEST13: [END] ** Collected in 1334 ms ** 
+```
 # Reference
 - [https://tourspace.tistory.com/260?category=797357](https://tourspace.tistory.com/260?category=797357)
