@@ -8,8 +8,43 @@
 - 보통의 Coroutine에서는 withContext를 이용하여 쉽게 전환할 수 있다.
 - 하지만 위에서 언급한 Context Preservation 속성으로 인하며 emit을 하는 context와 수신하는 context를 다르지 못하도록 설계되어있다.
 - 이럴 경우 flowOn Operator를 이용하여 emission하는 부분의 context를 바꿔줄 수 있다.
-- 하지만 Coroutine을 수행하는 주체는 달라지며 각각의 다른 Coroutine에서 실행된다. ( Thread가 다름. )
+- 하지만 Coroutine을 수행하는 주체는 달라지며 각각의 다른 Coroutine에서 실행된다. (Thread가 다름.)
 
 
+## Catch
+- emttier의 코드가 자신에 의해서 발생한 exception의 handling을 캡슐화 하기 위한 방안.
+- catch의 body 내부에 emit을 이용하여 값을 emission 할 수 있음.
+```
+fun TEST12(): Flow<String> = flow{
+    for(i in 1..3){
+        Log.d(MainActivity.TEST12, "[EMIT] $i")
+        emit(i)
+    }
+}.map { value ->
+    check(value <=1) { Log.d(MainActivity.TEST12, "[EXCEPTION] Crash on ::$value")}
+    "Result $value"
+}
+
+fun runOnTest12() = CoroutineScope(Dispatchers.Main).launch {
+    Log.d(MainActivity.TEST12, "[START]")
+    val time = measureTimeMillis {
+        TEST12()
+            .catch { e -> emit("[EMIT_CRASH] ::$e") }
+            .collect{
+                Log.d(MainActivity.TEST12, "[COLLECT] Collect:: $it")
+            }
+
+    }
+    Log.d(MainActivity.TEST11, "[END] ** Collected in $time ms ** ")
+}
+```
+```
+D/TEST12: [START]
+D/TEST12: [EMIT] 1
+D/TEST12: [COLLECT] Collect:: Result 1
+D/TEST12: [EMIT] 2
+D/TEST12: [EXCEPTION] Crash on ::2
+D/TEST12: [COLLECT] Collect:: [EMIT_CRASH] ::java.lang.IllegalStateException: 33
+```
 # Reference
 - [https://tourspace.tistory.com/260?category=797357](https://tourspace.tistory.com/260?category=797357)

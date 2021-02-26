@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
         runOnTest09()
         runOnTest10()
         runOnTest11()
+        runOnTest12()
     }
 
     companion object{
