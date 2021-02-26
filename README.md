@@ -75,5 +75,7 @@ D/TEST13: [COLLECT] Collect::3 -> two
 D/TEST13: [COLLECT] Collect::3 -> three
 D/TEST13: [END] ** Collected in 1334 ms ** 
 ```
+### Ect.
+- distinctUntilChanged(): 데이터가 실제로 변화가 있을 경우에만 방출한다.
 # Reference
 - [https://tourspace.tistory.com/260?category=797357](https://tourspace.tistory.com/260?category=797357)
